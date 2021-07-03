@@ -1,5 +1,12 @@
+# psycopg2
+# python-3.8-slim with psycopg2
+
+
 FROM postgres:12.7 as pone
 WORKDIR /opt/myapp/lib/
+# put all the psycopg2's runtime and build requires to WORKDIR
+# psycopg2 runtime libpq
+# so (shared object files)
 RUN  cp -d /usr/lib/x86_64-linux-gnu/libpq.so.5    /opt/myapp/lib/
 RUN  cp -d /usr/lib/x86_64-linux-gnu/libpq.so.5.13 /opt/myapp/lib/
 RUN  ldd /usr/lib/x86_64-linux-gnu/libpq.so.5 | awk '{print $3}' | \
@@ -7,19 +14,22 @@ RUN  ldd /usr/lib/x86_64-linux-gnu/libpq.so.5 | awk '{print $3}' | \
 
 FROM  python:"3.8.10-slim-buster" as ptwo
 WORKDIR /opt/myapp
-COPY  --from=pone /lib /lib
-COPY  --from=pone /usr/lib /usr/lib
-RUN	  ldconfig \   
-	  && PATH=$PATH:/usr/lib/postgresql/12/bin \
-      && export PATH \
-      && apt-get update \
-      && apt-get -y install gcc \
-          && apt-get -y install libpq-dev \
-          && pip install --no-cache-dir psycopg2==2.9.1
+# build requires:  pg_config, libpq-dev
+COPY --from=pone /lib /lib
+COPY --from=pone /usr/lib /usr/lib
+RUN  ldconfig \   
+     && PATH=$PATH:/usr/lib/postgresql/12/bin \
+     && export PATH \
+     && apt-get update \
+     && apt-get -y install gcc \
+     && apt-get -y install libpq-dev \
+     && pip install --no-cache-dir psycopg2==2.9.1
 		  
 FROM  python:"3.8.10-slim-buster"
 WORKDIR /opt/myapp
+# psycopg2 runtime
 COPY --from=pone /opt/myapp/lib /usr/lib
+# psycopg2 package
 COPY --from=ptwo /usr/local/lib/python3.8/site-packages \
                  /usr/local/lib/python3.8/site-packages
 
