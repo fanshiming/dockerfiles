@@ -6,7 +6,7 @@ FROM postgres:12.7 as pone
 WORKDIR /opt/myapp/lib/
 # put all the psycopg2's runtime and build requires to WORKDIR
 # psycopg2 runtime libpq
-# so (shared object files)
+# so - shared object files
 RUN  cp -d /usr/lib/x86_64-linux-gnu/libpq.so.5    /opt/myapp/lib/
 RUN  cp -d /usr/lib/x86_64-linux-gnu/libpq.so.5.13 /opt/myapp/lib/
 RUN  ldd /usr/lib/x86_64-linux-gnu/libpq.so.5 | awk '{print $3}' | \
@@ -26,13 +26,14 @@ RUN  ldconfig \
      && pip install --no-cache-dir psycopg2==2.9.1
 		  
 FROM  python:"3.8.10-slim-buster"
-WORKDIR /opt/myapp
+WORKDIR /opt
 # psycopg2 runtime
 COPY --from=pone /opt/myapp/lib /usr/lib
 # psycopg2 package
 COPY --from=ptwo /usr/local/lib/python3.8/site-packages \
                  /usr/local/lib/python3.8/site-packages
 
-LABEL  authors="fanshiming" \
-       tags="psycopg2 postgres"
-       info="psycopg2-2.9 postgres-12 python-3.8"
+VOLUME /app
+
+LABEL  info="python3  psycopg2  postgres-12-lib" \
+       welcome="welcome"
