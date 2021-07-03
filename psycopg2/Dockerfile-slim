@@ -1,7 +1,7 @@
 FROM postgres:12.7 as pone
 WORKDIR /opt/myapp/lib/
-RUN  cp -d /usr/lib/x86_64-linux-gnu/libpq.so.5 /opt/myapp/lib/
-RUN  cp    /usr/lib/x86_64-linux-gnu/libpq.so.5.13 /opt/myapp/lib/
+RUN  cp -d /usr/lib/x86_64-linux-gnu/libpq.so.5    /opt/myapp/lib/
+RUN  cp -d /usr/lib/x86_64-linux-gnu/libpq.so.5.13 /opt/myapp/lib/
 RUN  ldd /usr/lib/x86_64-linux-gnu/libpq.so.5 | awk '{print $3}' | \
          xargs -L 1 -i cp {}  /opt/myapp/lib/
 
@@ -20,8 +20,9 @@ RUN	  ldconfig \
 FROM  python:"3.8.10-slim-buster"
 WORKDIR /opt/myapp
 COPY --from=pone /opt/myapp/lib /usr/lib
-COPY --from=ptwo /usr/local/lib/python3.8/site-packages /usr/local/lib/python3.8/site-packages
+COPY --from=ptwo /usr/local/lib/python3.8/site-packages \
+                 /usr/local/lib/python3.8/site-packages
 
-LABEL  authors="bigmoon" \
+LABEL  authors="fanshiming" \
        tags="psycopg2 postgres"
        info="psycopg2-2.9 postgres-12 python-3.8"
