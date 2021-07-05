@@ -1,0 +1,7 @@
+# linuxx64_odbc_cli.tar.gz 
+  是ibm_db 驱动包
+  tar xvf linuxx64_odbc_cli.tar.gz   -> clidriver/
+
+# ibm_db-3.0.4.tar.gz
+  是ibm_db离线安装包
+  
