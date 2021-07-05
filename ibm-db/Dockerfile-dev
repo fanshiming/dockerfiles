@@ -3,15 +3,18 @@
 
 FROM  python:"3.8.10-slim-buster" as pone
 WORKDIR /opt
+
+# tar xvf linuxx64_odbc_cli.tar.gz
+# linuxx64_odbc_cli.tar.gz -> clidriver/
 COPY  opt/clidriver  /opt/clidriver
 COPY  opt/ibm_db-3.0.4.tar.gz /opt
+
 COPY  -d opt/clidriver/lib/libdb2.so* /usr/lib/
 
 ENV IBM_DB_HOME=/opt/clidriver
 
-RUN   apt-get update \
-      && apt-get -y install gcc \
-      && apt-get install -y libxml2-dev \
-      && python /opt/v2/ibm_db-3.0.4/setup.py install
-      && pip install ibm_db==3.0.4
-      && copy -d  /opt/clidriver/lib/libdb2.so* /usr/lib/
+RUN  apt-get update \
+     && apt-get -y install gcc \
+     && apt-get install -y libxml2-dev \
+     # && python /opt/v2/ibm_db-3.0.4/setup.py install
+     && pip install ibm_db==3.0.4
